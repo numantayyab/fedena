@@ -70,5 +70,4 @@ class FedenaPlugin
     end
     dependency
   end
-  
 end

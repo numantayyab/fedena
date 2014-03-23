@@ -1,0 +1,36 @@
+== v0.6.2 2009-10-12
+* Merging forks adding:
+*  same_host? method and tests
+*  improved README
+*  new test coverage for override_only_path
+
+== v0.6.1 2009-09-16
+* Fixed Readme Typo
+
+== v0.6.0 2009-09-16
+
+* Added has_domain? method
+* Protect current_domain from IP access
+* Added more tests
+
+== 2009-09-13
+
+* Added current_domain method
+* Added controller & view usage to readme
+* Added more tests
+* Fixing load paths
+
+== 2009-08-26
+
+* Fixed needs_rewrite? method
+* Added is_mirror? method
+* Added tests, and fixed failing tests
+
+== 2009-08-24
+
+* Merged forks that added lots of features, tests, and fixes
+
+== 2008-06-25
+
+* Removed stray puts
+git://github.com/mbleigh/subdomain-fu.git
