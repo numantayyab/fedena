@@ -20,19 +20,26 @@ class ApplicationController < ActionController::Base
   helper :all
   protect_from_forgery # :secret => '434571160a81b5595319c859d32060c1'
   filter_parameter_logging :password
-  
+  #before_filter :check_subdomain
   before_filter { |c| Authorization.current_user = c.current_user }
   before_filter :message_user
   before_filter :set_user_language
   before_filter :set_variables
 
-  before_filter :dev_mode
+  before_filter :dev_mode, :check_subdomain
   include CustomInPlaceEditing
 
 
   def dev_mode
     if Rails.env == "development"
 
+    end
+  end
+
+  def check_subdomain
+    return true unless current_subdomain
+    unless SubDomain.find_by_name(current_subdomain).present?
+      redirect_to root_url(:host => request.domain, :port => request.port)
     end
   end
 
@@ -58,20 +65,20 @@ class ApplicationController < ActionController::Base
       flash[:notice] = "#{t('flash_msg2')} , #{exception} ."
       logger.info "[FedenaRescue] AR-Record_Not_Found #{exception.to_s}"
       log_error exception
-      redirect_to :controller=>:user ,:action=>:dashboard
+      redirect_to :controller => :user, :action => :dashboard
     end
 
     rescue_from NoMethodError do |exception|
       flash[:notice] = "#{t('flash_msg3')}"
       logger.info "[FedenaRescue] No method error #{exception.to_s}"
       log_error exception
-      redirect_to :controller=>:user ,:action=>:dashboard
+      redirect_to :controller => :user, :action => :dashboard
     end
   end
 
- 
+
   def only_assigned_employee_allowed
-    @privilege = @current_user.privileges.map{|p| p.name}
+    @privilege = @current_user.privileges.map { |p| p.name }
     if @current_user.employee?
       @employee_subjects= @current_user.employee_record.subjects
       if @employee_subjects.empty? and !@privilege.include?("StudentAttendanceView") and !@privilege.include?("StudentAttendanceRegister")
@@ -86,7 +93,7 @@ class ApplicationController < ActionController::Base
   def restrict_employees_from_exam
     if @current_user.employee?
       @employee_subjects= @current_user.employee_record.subjects
-      if @employee_subjects.empty? and !(Batch.active.collect(&:employee_id).include?(@current_user.employee_record.id.to_s)) and !@current_user.privileges.map{|p| p.name}.include?("ExaminationControl") and !@current_user.privileges.map{|p| p.name}.include?("EnterResults") and !@current_user.privileges.map{|p| p.name}.include?("ViewResults")
+      if @employee_subjects.empty? and !(Batch.active.collect(&:employee_id).include?(@current_user.employee_record.id.to_s)) and !@current_user.privileges.map { |p| p.name }.include?("ExaminationControl") and !@current_user.privileges.map { |p| p.name }.include?("EnterResults") and !@current_user.privileges.map { |p| p.name }.include?("ViewResults")
         flash[:notice] = "#{t('flash_msg4')}"
         redirect_to :controller => 'user', :action => 'dashboard'
       else
@@ -98,7 +105,7 @@ class ApplicationController < ActionController::Base
   def block_unauthorised_entry
     if @current_user.employee?
       @employee_subjects= @current_user.employee_record.subjects
-      if @employee_subjects.empty? and !@current_user.privileges.map{|p| p.name}.include?("ExaminationControl")
+      if @employee_subjects.empty? and !@current_user.privileges.map { |p| p.name }.include?("ExaminationControl")
         flash[:notice] = "#{t('flash_msg4')}"
         redirect_to :controller => 'user', :action => 'dashboard'
       else
@@ -106,7 +113,7 @@ class ApplicationController < ActionController::Base
       end
     end
   end
-  
+
   def initialize
     @title = FEDENA_SETTINGS[:company_name]
   end
@@ -119,7 +126,7 @@ class ApplicationController < ActionController::Base
     User.find(session[:user_id]) unless session[:user_id].nil?
   end
 
-  
+
   def find_finance_managers
     Privilege.find_by_name('FinanceControl').users
   end
@@ -128,7 +135,7 @@ class ApplicationController < ActionController::Base
     flash[:notice] = "#{t('flash_msg4')}"
     redirect_to :controller => 'user', :action => 'dashboard'
   end
-  
+
   protected
   def login_required
     unless session[:user_id]
@@ -151,7 +158,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  
 
   def configuration_settings_for_finance
     finance = Configuration.find_by_config_value("Finance")
@@ -172,7 +178,7 @@ class ApplicationController < ActionController::Base
       #      render :text =>student.id and return
       unless params[:id].to_i == student.id or params[:student].to_i == student.id or params[:student_id].to_i == student.id
         flash[:notice] = "#{t('flash_msg5')}"
-        redirect_to :controller=>"user", :action=>"dashboard"
+        redirect_to :controller => "user", :action => "dashboard"
       end
     end
   end
@@ -181,18 +187,18 @@ class ApplicationController < ActionController::Base
     unless current_user.admin?
       unless params[:id].to_s == current_user.username
         flash[:notice] = "#{t('flash_msg5')}"
-        redirect_to :controller=>"user", :action=>"dashboard"
+        redirect_to :controller => "user", :action => "dashboard"
       end
     end
   end
-  
+
   def limit_employee_profile_access
     unless @current_user.employee
       unless params[:id] == @current_user.employee_record.id
-        priv = @current_user.privileges.map{|p| p.name}
+        priv = @current_user.privileges.map { |p| p.name }
         unless current_user.admin? or priv.include?("HrBasics") or priv.include?("EmployeeSearch")
           flash[:notice] = "#{t('flash_msg5')}"
-          redirect_to :controller=>"user", :action=>"dashboard"
+          redirect_to :controller => "user", :action => "dashboard"
         end
       end
     end
@@ -209,7 +215,7 @@ class ApplicationController < ActionController::Base
       #    unless privilege.include?('9') or privilege.include?('14') or privilege.include?('17') or privilege.include?('18') or privilege.include?('19')
       unless params[:id].to_i == employee.id or current_user.role_symbols.include? "payslip_powers".to_sym
         flash[:notice] = "#{t('flash_msg5')}"
-        redirect_to :controller=>"user", :action=>"dashboard"
+        redirect_to :controller => "user", :action => "dashboard"
       end
     end
   end
@@ -221,11 +227,12 @@ class ApplicationController < ActionController::Base
       unless employee_user.id == current_user.id
         unless current_user.role_symbols.include?(:hr_basics) or current_user.role_symbols.include?(:employee_attendance)
           flash[:notice] = "#{t('flash_msg6')}"
-          redirect_to :controller=>"user", :action=>"dashboard"
+          redirect_to :controller => "user", :action => "dashboard"
         end
       end
     end
   end
+
   #  end
 
   #reminder filters
@@ -233,7 +240,7 @@ class ApplicationController < ActionController::Base
     reminder = Reminder.find(params[:id2])
     unless reminder.recipient == current_user.id
       flash[:notice] = "#{t('flash_msg5')}"
-      redirect_to :controller=>"reminder", :action=>"index"
+      redirect_to :controller => "reminder", :action => "index"
     end
   end
 
@@ -241,7 +248,7 @@ class ApplicationController < ActionController::Base
     reminder = Reminder.find(params[:id2])
     unless reminder.sender == current_user.id
       flash[:notice] = "#{t('flash_msg5')}"
-      redirect_to :controller=>"reminder", :action=>"index"
+      redirect_to :controller => "reminder", :action => "index"
     end
   end
 
@@ -252,7 +259,7 @@ class ApplicationController < ActionController::Base
     #    unless permitted_to? :employee_attendance_pdf, :employee_attendance
     unless employee_user.id == current_user.id
       flash[:notice] = "#{t('flash_msg6')}"
-      redirect_to :controller=>"user", :action=>"dashboard"
+      redirect_to :controller => "user", :action => "dashboard"
       #    end
     end
   end
@@ -263,7 +270,7 @@ class ApplicationController < ActionController::Base
     applied_employee_user = applied_employee.user
     unless applied_employee_user.id == current_user.id
       flash[:notice]="#{t('flash_msg5')}"
-      redirect_to :controller=>"user", :action=>"dashboard"
+      redirect_to :controller => "user", :action => "dashboard"
     end
   end
 
@@ -274,7 +281,7 @@ class ApplicationController < ActionController::Base
     applied_employees_manager_user = applied_employees_manager.user
     unless applied_employees_manager_user.id == current_user.id
       flash[:notice]="#{t('flash_msg5')}"
-      redirect_to :controller=>"user", :action=>"dashboard"
+      redirect_to :controller => "user", :action => "dashboard"
     end
   end
 
@@ -316,7 +323,7 @@ class ApplicationController < ActionController::Base
     I18n.default_locale = :en
     Translator.fallback(true)
     if session[:language].nil?
-      I18n.locale = lan.config_value
+      I18n.locale = lan.config_value if lan.present?
     else
       I18n.locale = session[:language]
     end
