@@ -9,7 +9,7 @@ require 'rubygems'
 gem 'bundler'
 #gem 'rubygems-update','1.5.2'
 #gem 'rubygems-bundler'
-gem 'i18n'
+gem 'i18n' ,"~> 0.4.0"
 #gem 'declarative_authorization'
 gem 'rdoc'
 gem 'declarative_authorization', '~> 0.5.1'
@@ -20,5 +20,6 @@ gem 'test-unit'
 gem 'mysql2'
 gem 'activerecord-mysql2-adapter'
 gem 'activerecord'
-gem 'subdomain-fu', :git => "http://github.com/mbleigh/subdomain-fu.git"
+gem 'subdomain-fu', :git => "git://github.com/mbleigh/subdomain-fu.git"
+#gem 'subdomain-fu', :git => "http://github.com/mbleigh/subdomain-fu.git"
 #gem 'subdomain-fu'#, :git => "git://github.com/nhowell/subdomain-fu.git"

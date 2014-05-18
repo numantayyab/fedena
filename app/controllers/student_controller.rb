@@ -80,6 +80,7 @@ class StudentController < ApplicationController
   def admission2
     @student = Student.find params[:id], :include => [:guardians]
     @guardian = Guardian.new params[:guardian]
+    @guardian.school_id = @school.id
     if request.post? and @guardian.save
       redirect_to :controller => "student", :action => "admission2", :id => @student.id
     end
@@ -94,7 +95,7 @@ class StudentController < ApplicationController
     return if params[:immediate_contact].nil?
     if request.post?
       sms_setting = SmsSetting.new()
-      @student = Student.update(@student.id, :immediate_contact_id => params[:immediate_contact][:contact])
+      @student = Student.update(@student.id, :immediate_contact_id => params[:immediate_contact][:contact] , :school_id => @school.id)
       if sms_setting.application_sms_active and @student.is_sms_enabled
         recipients = []
         message = "#{t('student_admission_done')}  #{@student.admission_no} #{t('password_is')} #{@student.admission_no}123"
@@ -427,10 +428,10 @@ class StudentController < ApplicationController
   def search_ajax
     if params[:option] == "active"
       if params[:query].length>= 3
-        @students = Student.find(:all,
-          :conditions => ["first_name LIKE ? OR middle_name LIKE ? OR last_name LIKE ?
-                            OR admission_no = ? OR (concat(first_name, \" \", last_name) LIKE ? ) ",
-            "#{params[:query]}%","#{params[:query]}%","#{params[:query]}%",
+        @students = Student.find(:all,:joins => :user,
+          :conditions => ["users.school_id LIKE ? AND students.first_name LIKE ? OR students.middle_name LIKE ? OR students.last_name LIKE ?
+                            OR students.admission_no = ? OR (concat(students.first_name, \" \", students.last_name) LIKE ? ) ",
+            "#{@school.id}%","#{params[:query]}%","#{params[:query]}%","#{params[:query]}%",
             "#{params[:query]}", "#{params[:query]}" ],
           :order => "batch_id asc,first_name asc",:include =>  [{:batch=>:course}]) unless params[:query] == ''
       else

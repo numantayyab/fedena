@@ -1,5 +1,6 @@
 class AdminController < ApplicationController
   layout 'admin'
+  require 'subdomain-fu'
 
   def index
 

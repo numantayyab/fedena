@@ -61,6 +61,7 @@ class Student < ActiveRecord::Base
     :message => "#{t('must_contain_only_letters')}"
 
   validates_associated :user
+  attr_accessor :school_id
   before_validation :create_user_and_validate
 
   has_attached_file :photo,
@@ -85,6 +86,10 @@ class Student < ActiveRecord::Base
     
   end
 
+  def return_school_id
+    self.user.school_id
+  end
+
   def create_user_and_validate
     if self.new_record?
       user_record = self.build_user
@@ -94,6 +99,7 @@ class Student < ActiveRecord::Base
       user_record.password = self.admission_no.to_s + "123"
       user_record.role = 'Student'
       user_record.email = self.email.blank? ? "" : self.email.to_s
+      user_record.school_id = self.school_id
       check_user_errors(user_record)
       return false unless errors.blank?
     else
@@ -105,6 +111,7 @@ class Student < ActiveRecord::Base
         self.user.first_name = self.first_name if check_changes.include?('first_name')
         self.user.last_name = self.last_name if check_changes.include?('last_name')
         self.user.email = self.email if check_changes.include?('email')
+        self.school_id = @@school_id
         check_user_errors(self.user)
       end
 

@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
 
   before_filter :dev_mode, :check_subdomain
   include CustomInPlaceEditing
-
+  require 'subdomain-fu'
 
   def dev_mode
     if Rails.env == "development"
@@ -38,7 +38,9 @@ class ApplicationController < ActionController::Base
 
   def check_subdomain
     return true unless current_subdomain
-    unless SubDomain.find_by_name(current_subdomain).present?
+    @school = SubDomain.find_by_name(current_subdomain)
+    @@school = @school
+    unless @school.present?
       redirect_to root_url(:host => request.domain, :port => request.port)
     end
   end

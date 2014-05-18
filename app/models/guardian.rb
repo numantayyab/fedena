@@ -23,6 +23,7 @@ class Guardian < ActiveRecord::Base
 
   validates_presence_of :first_name, :relation
   before_destroy :immediate_contact_nil
+  attr_accessor :school_id
 
   def validate
     errors.add(:dob, "#{t('cant_be_a_future_date')}.") if self.dob > Date.today unless self.dob.nil?
@@ -52,7 +53,8 @@ class Guardian < ActiveRecord::Base
       u.password = "p#{student.admission_no.to_s}123"
       u.role = 'Parent'
       u.email = ( email == '' or User.find_by_email(self.email) ) ? "" :self.email.to_s
-    end 
+      u.school_id = self.school_id
+    end
     self.update_attributes(:user_id => user.id) if user.save
   end
 

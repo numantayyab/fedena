@@ -192,6 +192,7 @@ class UserController < ApplicationController
   end
 
   def dashboard
+    @subdomain = SubDomain.find_by_name(current_subdomain)
     @user = current_user
     @config = Configuration.available_modules
     @employee = @user.employee_record if ['employee', 'admin'].include?(@user.role_name.downcase)

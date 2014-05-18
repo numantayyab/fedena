@@ -34,6 +34,7 @@ class Employee < ActiveRecord::Base
   has_many    :employee_salary_structures
   has_many    :finance_transactions, :as => :payee
   has_many    :employee_attendances
+  attr_accessor :school_id
 
   validates_format_of     :email, :with => /^[A-Z0-9._%-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i,   :allow_blank=>true,
     :message => "#{t('must_be_a_valid_email_address')}"
@@ -66,6 +67,7 @@ class Employee < ActiveRecord::Base
       user_record.password = self.employee_number.to_s + "123"
       user_record.role = 'Employee'
       user_record.email = self.email.blank? ? "" : self.email.to_s
+      user_record.school_id = self.school_id
       check_user_errors(user_record)
     else
       changes_to_be_checked = ['employee_number','first_name','last_name','email']

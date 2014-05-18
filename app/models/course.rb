@@ -23,6 +23,7 @@ class Course < ActiveRecord::Base
   validates_presence_of :course_name, :code
   validate :presence_of_initial_batch, :on => :create
 
+  belongs_to :school
   has_many :batches
   has_many :batch_groups
   has_many :ranking_levels

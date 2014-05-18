@@ -29,6 +29,7 @@ class User < ActiveRecord::Base
   validates_presence_of   :role , :on=>:create
   validates_presence_of   :password, :on => :create
 
+  belongs_to :school
   has_and_belongs_to_many :privileges
   has_many  :user_events
   has_many  :events,:through=>:user_events

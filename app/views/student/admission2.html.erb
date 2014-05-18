@@ -57,6 +57,7 @@
   <% form_for :guardian do |f| %>
 
     <%= f.error_messages :header_message => nil %>
+    <%= f.hidden_field :school_id, :value => @school.id %>
 
     <div id="admission1_form">
 

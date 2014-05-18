@@ -251,6 +251,7 @@ class EmployeeController < ApplicationController
 
   def admission1
     @user = current_user
+
     @user_name = @user.username
     @employee1 = @user.employee_record
     @categories = EmployeeCategory.find(:all,:order => "name asc",:conditions => "status = true")
@@ -269,6 +270,7 @@ class EmployeeController < ApplicationController
         @employee.employee_number= "E" + params[:employee][:employee_number].to_s
       end
       unless @employee.employee_number.to_s.downcase == 'admin'
+        @employee.school_id = @school.id
         if @employee.save
           if params[:employee][:gender] == "true"
             Employee.update(@employee.id, :gender => true)
