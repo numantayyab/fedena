@@ -136,7 +136,7 @@ ActiveRecord::Schema.define(:version => 20140503230240) do
   end
 
 # Could not dump table "archived_exam_scores" because of following NoMethodError
-#   undefined method `limits' for #<ActiveRecord::ConnectionAdapters::Mysql2IndexDefinition:0x7f25b7891370>
+#   undefined method `limits' for #<ActiveRecord::ConnectionAdapters::Mysql2IndexDefinition:0x7ffe4bf48e08>
 
   create_table "archived_guardians", :force => true do |t|
     t.integer  "ward_id"
