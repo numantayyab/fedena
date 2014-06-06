@@ -21,6 +21,7 @@
 <% form_for :student_category, :url => {:action => 'categories'} do |f| %>
 <div class="label-field-pair">
   <label><%= t('enter_new_category') %> : </label>
+<%= f.hidden_field :school_id, :value => @school.id %>
 <div class="text-input-bg"><%= f.text_field :name, :value => '' %>
 </div>
   </div>

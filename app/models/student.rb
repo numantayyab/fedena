@@ -51,6 +51,7 @@ class Student < ActiveRecord::Base
   named_scope :with_name_admission_no_only, :select=>"id, CONCAT_WS('',first_name,' ',last_name,' - ',admission_no) AS name,first_name,last_name,admission_no", :order=>:first_name
 
   named_scope :by_first_name, :order=>'first_name',:conditions => { :is_active => true }
+  named_scope :same_school, :include=>'user',:conditions => { 'users.school_id',$school.id}
 
   validates_presence_of :admission_no, :admission_date, :first_name, :batch_id, :date_of_birth
   validates_uniqueness_of :admission_no
@@ -99,7 +100,7 @@ class Student < ActiveRecord::Base
       user_record.password = self.admission_no.to_s + "123"
       user_record.role = 'Student'
       user_record.email = self.email.blank? ? "" : self.email.to_s
-      user_record.school_id = self.school_id
+      user_record.school_id = $school.id
       check_user_errors(user_record)
       return false unless errors.blank?
     else
@@ -111,7 +112,8 @@ class Student < ActiveRecord::Base
         self.user.first_name = self.first_name if check_changes.include?('first_name')
         self.user.last_name = self.last_name if check_changes.include?('last_name')
         self.user.email = self.email if check_changes.include?('email')
-        self.school_id = @@school_id
+        p '[[[[[[[[[[[[[[[[[[[[[[[' , $school.id
+        self.school_id = $school.id
         check_user_errors(self.user)
       end
 

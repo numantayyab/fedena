@@ -161,7 +161,7 @@ class BatchesController < ApplicationController
   end
 
   def show
-    @students = @batch.students
+    @students = @batch.students.same_school
   end
 
   def destroy

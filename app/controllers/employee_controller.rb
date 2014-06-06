@@ -270,8 +270,8 @@ class EmployeeController < ApplicationController
         @employee.employee_number= "E" + params[:employee][:employee_number].to_s
       end
       unless @employee.employee_number.to_s.downcase == 'admin'
-        @employee.school_id = @school.id
         if @employee.save
+          @employee.user.update_attribute(:school_id,@school.id)
           if params[:employee][:gender] == "true"
             Employee.update(@employee.id, :gender => true)
           else
@@ -544,6 +544,7 @@ class EmployeeController < ApplicationController
         :conditions => ["(employee_number = ? )"+ other_conditions, "#{params[:query]}"],
         :order => "employee_department_id asc,first_name asc",:include=>"employee_department") unless params[:query] == ''
     end
+    @employee = @employee.map{|e| e if  e.user.school_id == @school.id}.compact
     render :layout => false
   end
 
@@ -565,6 +566,7 @@ class EmployeeController < ApplicationController
         :conditions => ["employee_number = ? "+ other_conditions, "#{params[:query]}%"],
         :order => "employee_department_id asc,first_name asc") unless params[:query] == ''
     end
+    @employee = @employee.map{|s| s if  s.user.school_id == @school.id}.compact
     render :layout => false
   end
 
@@ -695,7 +697,8 @@ class EmployeeController < ApplicationController
 
   def employees_list
     department_id = params[:department_id]
-    @employees = Employee.find_all_by_employee_department_id(department_id,:order=>'first_name ASC')
+    # @employees = Employee.find_all_by_employee_department_id_and_school_id(department_id,@school.id,:order=>'first_name ASC')
+    @employees = Employee.find(:all ,:joins => [:user], :conditions => ["employees.employee_department_id = ? AND users.school_id = ?" , department_id , @school.id],:order=>'first_name ASC')
 
     render :update do |page|
       page.replace_html 'employee_list', :partial => 'employee_view_all_list', :object => @employees

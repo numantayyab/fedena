@@ -672,14 +672,14 @@ class FinanceController < ApplicationController
   def master_fees
     @finance_fee_category = FinanceFeeCategory.new
     @finance_fee_particular = FinanceFeeParticular.new
-    @batchs = Batch.active
+    @batchs = Batch.active#.same_school
     @master_categories = FinanceFeeCategory.find(:all,:conditions=> ["is_deleted = '#{false}' and is_master = 1 and batch_id=?",params[:batch_id]]) unless params[:batch_id].blank?
     @student_categories = StudentCategory.active
   end
   
   def master_category_new
     @finance_fee_category = FinanceFeeCategory.new
-    @batches = Batch.active
+    @batches = Batch.active.same_school
     respond_to do |format|
       format.js { render :action => 'master_category_new' }
     end

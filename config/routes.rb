@@ -1,6 +1,4 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :users
-
 
   map.resources :grading_levels
   map.resources :ranking_levels, :collection => {:create_ranking_level => [:get, :post], :edit_ranking_level => [:get, :post], :update_ranking_level => [:get, :post], :delete_ranking_level => [:get, :post], :ranking_level_cancel => [:get, :post], :change_priority => [:get, :post]}
@@ -57,8 +55,6 @@ ActionController::Routing::Routes.draw do |map|
 #map.feed 'user/about_us', :controller => 'user' ,:action=>'about_us'
   map.resources :schools
   map.root :controller => 'admin', :action => 'index'
-  #map.feed 'user/about_us', :controller => 'user' ,:action=>'about_us'
-  map.root :controller => 'user', :action => 'new_dashboard'
 
   map.fa_scores 'assessment_scores/exam/:exam_id/fa_group/:fa_group_id', :controller => 'assessment_scores', :action => 'fa_scores'
   map.observation_scores 'assessment_scores/batch/:batch_id/observation_group/:observation_group_id', :controller => 'assessment_scores', :action => 'observation_scores'

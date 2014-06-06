@@ -3,7 +3,6 @@ class AdminController < ApplicationController
   require 'subdomain-fu'
 
   def index
-
   end
 
   def new_dashboard
@@ -22,8 +21,12 @@ class AdminController < ApplicationController
   end
 
   def home
-    authenticate
-    @school = School.new
+    if current_subdomain
+      redirect_to root_url
+    else
+      authenticate
+      @school = School.new
+    end
   end
 
   def abc

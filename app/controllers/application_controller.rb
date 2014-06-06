@@ -1,33 +1,18 @@
-#Fedena
-#Copyright 2011 Foradian Technologies Private Limited
-#
-#This product includes software developed at
-#Project Fedena - http://www.projectfedena.org/
-#
-#Licensed under the Apache License, Version 2.0 (the "License");
-#you may not use this file except in compliance with the License.
-#You may obtain a copy of the License at
-#
-#  http://www.apache.org/licenses/LICENSE-2.0
-#
-#Unless required by applicable law or agreed to in writing, software
-#distributed under the License is distributed on an "AS IS" BASIS,
-#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#See the License for the specific language governing permissions and
-#limitations under the License.
-
 class ApplicationController < ActionController::Base
   helper :all
   protect_from_forgery # :secret => '434571160a81b5595319c859d32060c1'
   filter_parameter_logging :password
-  #before_filter :check_subdomain
+
+  before_filter :check_subdomain
+  # before_filter :logged_school
   before_filter { |c| Authorization.current_user = c.current_user }
   before_filter :message_user
   before_filter :set_user_language
   before_filter :set_variables
 
-  before_filter :dev_mode, :check_subdomain
+  before_filter :dev_mode#, :check_subdomain
   include CustomInPlaceEditing
+  # include ApplicationHelper
   require 'subdomain-fu'
 
   def dev_mode
@@ -39,10 +24,19 @@ class ApplicationController < ActionController::Base
   def check_subdomain
     return true unless current_subdomain
     @school = SubDomain.find_by_name(current_subdomain)
-    @@school = @school
+    $school = @school
     unless @school.present?
       redirect_to root_url(:host => request.domain, :port => request.port)
     end
+  end
+
+  def logged_school
+    aaaaaaaaaaa
+    # Rails.logger.info "#{session[:school_id].present?} , #{session[:school_id] != @school.id} and #{!login_page}"
+    # aaaaaaaaaaa
+    # if (session[:school_id].present? and session[:school_id] != @school.id and !login_page)
+    #   session[:user_id] = nil
+    # end
   end
 
   def set_variables

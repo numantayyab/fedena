@@ -43,6 +43,7 @@ class Employee < ActiveRecord::Base
     :employee_department_id,  :date_of_birth,:joining_date
   validates_uniqueness_of  :employee_number
 
+
   validates_associated :user
   before_validation :create_user_and_validate
 
@@ -67,7 +68,7 @@ class Employee < ActiveRecord::Base
       user_record.password = self.employee_number.to_s + "123"
       user_record.role = 'Employee'
       user_record.email = self.email.blank? ? "" : self.email.to_s
-      user_record.school_id = self.school_id
+      # user_record.school_id = @@school_id
       check_user_errors(user_record)
     else
       changes_to_be_checked = ['employee_number','first_name','last_name','email']

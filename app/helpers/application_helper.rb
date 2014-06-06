@@ -92,7 +92,7 @@ module ApplicationHelper
   end
 
   def generic_hook(cntrl,act)
-    FedenaPlugin::ADDITIONAL_LINKS[:generic_hook].each do |mod| 
+    FedenaPlugin::ADDITIONAL_LINKS[:generic_hook].each do |mod|
       if cntrl.to_s == mod[:source][:controller].to_s && act.to_s == mod[:source][:action].to_s
         if permitted_to? mod[:destination][:action].to_sym,mod[:destination][:controller].to_sym
           return link_to(mod[:title], :controller=>mod[:destination][:controller].to_sym,:action=>mod[:destination][:action].to_sym)
@@ -118,5 +118,9 @@ module ApplicationHelper
       end
     end
     return dashboard_links
+  end
+
+  def login_page
+    params[:controller].eql?('user') and params[:action].eql?('login')
   end
 end

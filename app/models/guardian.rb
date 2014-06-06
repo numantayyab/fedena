@@ -53,7 +53,7 @@ class Guardian < ActiveRecord::Base
       u.password = "p#{student.admission_no.to_s}123"
       u.role = 'Parent'
       u.email = ( email == '' or User.find_by_email(self.email) ) ? "" :self.email.to_s
-      u.school_id = self.school_id
+      u.school_id =   $school.id
     end
     self.update_attributes(:user_id => user.id) if user.save
   end

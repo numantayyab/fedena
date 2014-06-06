@@ -256,7 +256,10 @@ class UserController < ApplicationController
       end
     end
     if authenticated_user.present?
-      successful_user_login(authenticated_user) and return
+      session[:user_id] = authenticated_user.id
+     # session[:school_id] = @school.id
+    # debugger
+     successful_user_login(authenticated_user) and return
     elsif authenticated_user.blank? and request.post?
       flash[:notice] = "#{t('login_error_message')}"
     end
@@ -272,6 +275,7 @@ class UserController < ApplicationController
     selected_logout_hook = available_login_authes.first if available_login_authes.count>=1
     if selected_logout_hook
       selected_logout_hook[:name].classify.constantize.send("logout_hook", self, "/")
+      session[:school_id] = nil
     else
       redirect_to :controller => 'user', :action => 'login' and return
     end
@@ -325,6 +329,7 @@ class UserController < ApplicationController
     else
       @user = ''
     end
+    @user = @user.map{|s| s if  s.school_id == @school.id}.compact
     render :layout => false
   end
 
