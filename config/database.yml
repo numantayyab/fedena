@@ -24,12 +24,13 @@ development:
 #      username: root
 #      password: foradian
 #
-#production:
-#      host: localhost
-#      adapter: mysql
-#      database: fedena_ultimate
-#      port: 3306
-#      username: root
-#      password: foradian
+production:
+  host: localhost
+  adapter: mysql
+  database: fedena_ultimate
+  port: 3306
+  username: root
+  password: root
+  reconnect: true
 #cucumber:
 #  <<: *test
